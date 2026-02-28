@@ -1,0 +1,49 @@
+{
+  "name": "fivem-typescript-boilerplate",
+  "author": "korean_gangster / ronald#0001",
+  "version": "0.0.0",
+  "license": "PRIVATE IS NOT TO BE USED WITHOUT PERMISSION",
+  "description": "default boilerplate for cfx projects using typescript",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "web:dev": "pnpm exec vite dev project/interface",
+    "build": "tsx scripts/build.ts --release",
+    "build:dev": "tsx scripts/build.ts --dev",
+    "watch": "tsx scripts/build.ts --watch",
+    "fxdoc": "tsx scripts/utils/bin/fxdoc.ts",
+    "format": "pnpm biome format --write",
+    "lint": "pnpm biome lint --write"
+  },
+  "keywords": [
+    "cfx",
+    "fivem",
+    "typescript",
+    "boilerplate"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xxx/fivem-typescript-boilerplate.git"
+  },
+  "bugs": "https://github.com/xxx/fivem-typescript-boilerplate/issues",
+  "devDependencies": {
+    "@citizenfx/client": "latest",
+    "@citizenfx/server": "latest",
+    "@types/node": "^25.3.2",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "esbuild": "^0.27.3",
+    "javascript-obfuscator": "^5.3.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vite": "^5.4.14"
+  },
+  "dependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@nativewrappers/fivem": "latest",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "zod": "^4.3.6"
+  }
+}

@@ -1,0 +1,10 @@
+node_modules
+/dist
+/fxmanifest.lua
+/.yarn.installed
+
+.env
+*.log
+
+project/interface/node_modules
+project/interface/dist
