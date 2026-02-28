@@ -1,3 +1,13 @@
+# cfx-ts-boilerplate
+
+A modern TypeScript boilerplate for FiveM resources using esbuild + Vite.
+
+## Features
+- Server / Client / Interface separation
+- Typed command system
+- Build pipeline with watch + production mode
+- NUI (React + Vite)
+
 ### Setup
 
 Navigate to your new directory and execute the following command to install dependencies.
@@ -7,6 +17,8 @@ pnpm install
 ```
 
 ## Development
+
+Use `pnpm build:dev` to build all project files in a readable production mode.
 
 Use `pnpm watch` to actively rebuild modified files while developing the resource.
 
