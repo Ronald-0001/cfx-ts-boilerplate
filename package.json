@@ -23,9 +23,9 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/xxx/fivem-typescript-boilerplate.git"
+    "url": "https://github.com/Ronald-0001/cfx-ts-boilerplate.git"
   },
-  "bugs": "https://github.com/xxx/fivem-typescript-boilerplate/issues",
+  "bugs": "https://github.com/Ronald-0001/cfx-ts-boilerplate/issues",
   "devDependencies": {
     "@citizenfx/client": "latest",
     "@citizenfx/server": "latest",
