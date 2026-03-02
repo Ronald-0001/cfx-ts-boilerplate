@@ -16,3 +16,9 @@ export const ResourceName = IsBrowser
     ? window.GetParentResourceName()
     : 'nui-frame-app'
   : GetCurrentResourceName();
+
+let _devResourcePath;
+$DEV: {
+  _devResourcePath = "./dist"; 
+}
+export const ResourcePath = _devResourcePath ?? ".";

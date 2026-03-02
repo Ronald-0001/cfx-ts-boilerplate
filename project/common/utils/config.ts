@@ -6,8 +6,9 @@
 
 import type StaticConfig from '~/project/static/config.json';
 import { LoadJsonFile } from './files';
+import { ResourcePath } from './resource';
 
-let config = LoadJsonFile('static/config.json');
+let config = LoadJsonFile(`${ResourcePath}/static/config.json`);
 
 $BROWSER: {
   config = await config;

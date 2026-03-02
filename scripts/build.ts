@@ -45,7 +45,7 @@ if (hasStatic) {
 /* Drop labels                   */
 /* ----------------------------- */
 const dropLabels: string[] = ['$BROWSER'];
-if (!watch) dropLabels.push('$DEV');
+if (release) dropLabels.push('$DEV');
 
 /* ----------------------------- */
 /* Build server/client (esbuild) */
@@ -110,8 +110,11 @@ async function addDirFiles(targetDir: string, out: string[]) {
     out.push(toResourcePath(f));
   }
 }
-
-async function generateManifest(): Promise<void> {
+async function generateManifests(): Promise<void> {
+  await generateMainManifest();
+  await generateDevManifest();
+}
+async function generateMainManifest(): Promise<void> {
   const files: string[] = [];
 
   await addDirFiles('./dist/interface', files);
@@ -128,6 +131,26 @@ async function generateManifest(): Promise<void> {
       ? { ui_page: 'interface/index.html', node_version: '22' }
       : { node_version: '22' },
     outPath: './dist/fxmanifest.lua',
+    write: true,
+  } as any);
+}
+async function generateDevManifest(): Promise<void> {
+  const files: string[] = [];
+
+  await addDirFiles('./dist/interface', files);
+  await addDirFiles('./dist/static', files);
+
+  const uniqueFiles = Array.from(new Set(files)).sort().map((f) => `dist/${f}`);
+
+  await createFxmanifest({
+    client_scripts: hasClient ? ['dist/client/index.js'] : undefined,
+    server_scripts: hasServer ? ['dist/server/index.js'] : undefined,
+    files: uniqueFiles.length ? uniqueFiles : undefined,
+    dependencies: ['/onesync'],
+    metadata: existsSync('./dist/interface')
+      ? { ui_page: 'dist/interface/index.html', node_version: '22' }
+      : { node_version: '22' },
+    outPath: './fxmanifest.lua',
     write: true,
   } as any);
 }
@@ -156,7 +179,10 @@ await createBuilder(
     // - do NOT obfuscate
     // - do NOT run vite build (watcher handles interface)
     if (watch) {
-      await generateManifest();
+      if (hasStatic) {
+        cpSync('./project/static', './dist/static', { recursive: true });
+      }
+      await generateManifests();
       return;
     }
 
@@ -177,7 +203,7 @@ await createBuilder(
       if (existsSync('dist/server/index.js')) await obfuscateFile('dist/server/index.js');
     }
 
-    await generateManifest();
+    await generateManifests();
 
     // No need for process.exit if createBuilder disposes contexts,
     // but harmless as a belt-and-suspenders.

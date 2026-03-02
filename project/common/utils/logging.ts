@@ -1,4 +1,5 @@
 import type { LogEntry, LogLevel, Logger, LoggerOptions, LoggerTransport } from '../types/logging';
+import Config from './config';
 
 /* ----------------------------- */
 /* Dev mode flag via $DEV label  */
@@ -26,6 +27,10 @@ function shouldPrint(level: LogLevel, minLevel: LogLevel): boolean {
   // debug/trace only in dev builds
   if ((level === 'debug' || level === 'trace') && !__DEV__) return false;
   return LEVEL_WEIGHT[level] >= LEVEL_WEIGHT[minLevel];
+}
+
+function coerceLevel(v: unknown, fallback: LogLevel): LogLevel {
+  return typeof v === 'string' && (Object.keys(LEVEL_WEIGHT) as readonly string[]).includes(v) ? (v as LogLevel) : fallback;
 }
 
 /* ----------------------------- */
@@ -70,9 +75,10 @@ function safeStringify(value: unknown): string {
 
 function colorFor(level: LogLevel): string {
   // CFX console colors
-  // ^1 red, ^3 yellow, ^2 green, ^5 light blue, ^7 default, ^8 gray
+  // ^1 light red, ^2 green, ^3 yellow, ^4 light purple, ^5 light blue, ^6 purple, ^7 default, ^8 dark red ^9 dark blue, ^0 white
   switch (level) {
     case 'fatal':
+      return '^8';
     case 'error':
       return '^1';
     case 'warn':
@@ -82,7 +88,7 @@ function colorFor(level: LogLevel): string {
     case 'debug':
       return '^5';
     case 'trace':
-      return '^8';
+      return '^6';
     default:
       return '^7';
   }
@@ -213,7 +219,7 @@ function makeLogger(options: LoggerOptions): Logger {
 
 export const logger = makeLogger({
   // show resource name by default via GetCurrentResourceName()
-  level: 'info'
+  level: coerceLevel(Config?.Debug?.Level, 'info'),
 });
 
 export function createLogger(options: LoggerOptions): Logger {
