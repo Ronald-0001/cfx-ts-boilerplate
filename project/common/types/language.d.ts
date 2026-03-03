@@ -6,11 +6,12 @@ export interface LanguageConfigShape {
   Extension?: string;
   Directory?: string;
   WarnMissing?: boolean;
+  Fallback?: string
 }
 
 export interface LanguageApi {
   /** Reload using current config (or override file code) */
-  setLang(file: string): void | Promise<void>;
+  loadLang(file: string): Promise<void>;
 
   /** Current selected language code (File) */
   getFile(): string;

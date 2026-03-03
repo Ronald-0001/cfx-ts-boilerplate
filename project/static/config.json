@@ -4,7 +4,8 @@
     "File": "en",
     "Extension": ".json",
     "Directory": "static/language",
-    "WarnMissing": true
+    "WarnMissing": true,
+    "Fallback": "en"
   },
   "Debug": {
     "Level": "trace",

@@ -12,7 +12,6 @@ It normalizes path handling using `ResourceName` and `ResourcePath`.
 ## Location
 
 - Implementation: `project/common/utils/files.ts`
-- Depends on: `project/common/utils/resource.ts`
 
 ---
 
@@ -162,8 +161,11 @@ If code may run in both game and web contexts, handle both:
 
 ```ts
 // async function
-const cfg = LoadJsonFile('static/config.json');
-const config = cfg instanceof Promise ? await cfg : cfg;
+const tempData = LoadJsonFile<unknown>('static/config.json');
+const config = await Promise.resolve(tempData);
+// or
+const tempData = LoadJsonFile('static/config.json');
+const config = tempData instanceof Promise ? await tempData : tempData;
 
 // top level "where await is not supported with the CJS format"
 let config = LoadJsonFile('static/config.json');

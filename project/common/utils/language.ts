@@ -3,30 +3,32 @@ import { LoadJsonFile } from './files';
 import Config from './config';
 import { logger } from './logging';
 
-const log = logger.child('language');
-
-/* ----------------------------- */
-/* Enviromental flags via $      */
-/* ----------------------------- */
-
-let __DEV__ = false;
-// This line is removed from non-dev builds by esbuild dropLabels,
-// and kept in watch/dev builds.
-$DEV: (__DEV__ = true);
-
-let __BROWSER__ = false;
-// This line is removed from non-browser builds by esbuild dropLabels,
-// and kept in browser builds.
-$BROWSER: (__BROWSER__ = true);
-
 /* ----------------------------- */
 /* Defaults                      */
 /* ----------------------------- */
 
+const log = logger.child('language');
+
 let defaultConfig = readLanguageConfig(Config);
-let defaultLanguage = LoadJsonFile(formatPath(defaultConfig.Directory, defaultConfig.File, defaultConfig.Extension)) as unknown;
+const defaultPath = formatPath(defaultConfig.Directory, defaultConfig.File, defaultConfig.Extension)
+let defaultLanguage = LoadJsonFile<unknown>(defaultPath);
 $BROWSER: {
   defaultLanguage = await defaultLanguage;
+}
+
+/* ----------------------------- */
+/* File handling                 */
+/* ----------------------------- */
+
+async function loadLocaleFile(path: string): Promise<AnyObj | null> {
+  try {
+    const temp = LoadJsonFile<unknown>(path);
+    const data = await Promise.resolve(temp);
+    if (!isPlainObject(data)) return null;
+    return data as AnyObj;
+  } catch {
+    return null;
+  }
 }
 
 /* ----------------------------- */
@@ -71,19 +73,28 @@ function resolveRefs(
   if (depth >= maxDepth) return raw;
 
   return raw.replace(/\$\(([a-zA-Z0-9_.-]+)\)/g, (_m, ref: string) => {
-    // args override reference tokens too
-    const argV = args ? (args as any)[ref] : undefined;
-    if (argV !== undefined && argV !== null) return String(argV);
-
-    const cycleKey = `${key} -> ${ref}`;
-    if (seen.has(cycleKey)) return '';
-
-    seen.add(cycleKey);
+    if (seen.has(ref)) {
+      // cycle detected
+      return '';
+    }
 
     const refRaw = dict[ref];
     if (!refRaw) return '';
 
-    const resolved = resolveRefs(ref, refRaw, dict, args, maxDepth, depth + 1, seen);
+    seen.add(ref);
+
+    const resolved = resolveRefs(
+      ref,
+      refRaw,
+      dict,
+      args,
+      maxDepth,
+      depth + 1,
+      seen
+    );
+
+    seen.delete(ref);
+
     return replacePlaceholders(resolved, args);
   });
 }
@@ -113,23 +124,14 @@ function readLanguageConfig(cfg: any): Required<LanguageConfigShape> {
     File: coerceStr(lang.File, 'en'),
     Extension: coerceStr(lang.Extension, '.json'),
     Directory: coerceStr(lang.Directory, 'static/language'),
-    WarnMissing: coerceBool(lang.WarnMissing, true)
+    WarnMissing: coerceBool(lang.WarnMissing, true),
+    Fallback: coerceStr(lang.Fallback, 'en')
   };
 }
 
 /* ----------------------------- */
 /* Language API                  */
 /* ----------------------------- */
-
-function loadLocaleFile(path: string): AnyObj | null {
-  try {
-    const data = LoadJsonFile<unknown>(path);
-    if (!isPlainObject(data)) return null;
-    return data as AnyObj;
-  } catch {
-    return null;
-  }
-}
 
 export function createLanguage(): LanguageApi {
   let dict: Dict = {};
@@ -142,31 +144,56 @@ export function createLanguage(): LanguageApi {
   let loading = false;
   let everLoaded = false;
 
-  function setLang(file: string) {
-    loading = false;
-    everLoaded = false;
-    currentFile = file;
-    dict = {};
-    loadLang();
-  }
-
-  function loadLang() {
+  async function loadDefault() {
     loading = true;
 
-    const path = formatPath(directory, currentFile, extension);
-    const obj = loadLocaleFile(path);
+    const path = defaultPath;
+    const obj = defaultLanguage;
 
-    if (!obj) {
-      if (currentFile !== 'en') log.warn(`Language file not found: ${path} (using fallback en)`);
-      return setLang('en');
-    } else {
-      log.error('Failed to load fallback language', new Error(`Failed to load language file: ${path}`));
+    if (!isPlainObject(obj)) {
+      dict = {};
+      loading = false;
+      everLoaded = false;
+      log.error(`Default language is not an object: ${path}`);
+      return;
     }
 
-    dict = flatten(obj);
+    dict = flatten(obj as AnyObj);
     loading = false;
     everLoaded = true;
     log.info(`Loaded ${currentFile} (${path})`);
+  }
+
+  async function loadLang(file: string) {
+    if (loading) return;
+    if (file == currentFile) return;
+    loading = true;
+    everLoaded = false;
+    dict = {};
+
+    const path = formatPath(directory, file, extension);
+    const obj = await loadLocaleFile(path);
+
+    if (!obj) {
+      if (file !== defaultConfig.Fallback) log.warn(`Language file not found: ${path} (using fallback ${defaultConfig.Fallback})`);
+      loading = false;
+
+      try {
+        const fallback: Promise<void> = loadLang(defaultConfig.Fallback);
+        return fallback;
+      } catch (err) {
+        log.error(`Failed to load fallback`, err);
+        loading = false;
+        everLoaded = true;
+        dict = {};
+      }
+    }
+
+    currentFile = file;
+    dict = flatten(obj);
+    loading = false;
+    everLoaded = true;
+    log.info(`Loaded ${file} (${path})`);
   }
 
   function lookup(key: string): string | undefined {
@@ -203,9 +230,9 @@ export function createLanguage(): LanguageApi {
   }
 
   // Auto-load on module import (no init required)
-  void loadLang();
+  void loadDefault();
 
-  return { setLang, getFile, t, tk, getDictionary };
+  return { loadLang, getFile, t, tk, getDictionary };
 }
 
 export const lang = createLanguage();
