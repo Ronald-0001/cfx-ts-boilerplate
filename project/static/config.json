@@ -1,4 +1,11 @@
 {
+  "Language": {
+    "Depth": 8,
+    "File": "en",
+    "Extension": ".json",
+    "Directory": "static/language",
+    "WarnMissing": true
+  },
   "Debug": {
     "Level": "trace",
     "Transport": {

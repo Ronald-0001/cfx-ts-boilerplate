@@ -161,8 +161,15 @@ LoadJsonFile('dist/static/config.json')
 If code may run in both game and web contexts, handle both:
 
 ```ts
+// async function
 const cfg = LoadJsonFile('static/config.json');
 const config = cfg instanceof Promise ? await cfg : cfg;
+
+// top level "where await is not supported with the CJS format"
+let config = LoadJsonFile('static/config.json');
+$BROWSER: {
+  config = await config;
+}
 ```
 
 ---

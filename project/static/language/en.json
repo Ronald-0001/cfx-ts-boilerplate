@@ -1,0 +1,7 @@
+{
+  "common": {
+    "world": "world",
+    "hello": "Hello, $(common.world)!",
+    "greeting": "Hello, {name}!"
+  }
+}

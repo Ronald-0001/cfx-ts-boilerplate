@@ -9,7 +9,7 @@ export function LoadFile(path: string) {
 export function LoadJsonFile<T = unknown>(path: string): T {
   if (!IsBrowser) return JSON.parse(LoadFile(path)) as T;
 
-  const resp = fetch(`/${path}`, {
+  const resp = fetch(`/${ResourcePath.replace(".", "")}${path}`, {
     method: 'post',
     headers: {
       'Content-Type': 'application/json; charset=UTF-8',
