@@ -4,6 +4,8 @@ export function LoadFile(path: string) {
   return LoadResourceFile(ResourceName, `${ResourcePath}/${path}`);
 }
 
+//TODO: need to ensure loading correct path in browser!
+// remember to update files.md when changing this function in future
 export function LoadJsonFile<T = unknown>(path: string): T {
   if (!IsBrowser) return JSON.parse(LoadFile(path)) as T;
 
