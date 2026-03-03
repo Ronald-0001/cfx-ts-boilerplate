@@ -11,6 +11,14 @@ let __DEV__ = false;
 $DEV: (__DEV__ = true);
 
 /* ----------------------------- */
+/* Misc opperations              */
+/* ----------------------------- */
+
+function isRecord(v: unknown): v is Record<string, unknown> {
+  return typeof v === 'object' && v !== null && !Array.isArray(v);
+}
+
+/* ----------------------------- */
 /* Level ordering / filtering    */
 /* ----------------------------- */
 
@@ -119,6 +127,20 @@ function trace(line: string) {
 /* Transports                    */
 /* ----------------------------- */
 
+function getDefaultTransport(): LoggerTransport | undefined {
+  const dbg = Config?.Debug;
+  if (!isRecord(dbg)) return undefined;
+
+  const transport = dbg.Transport;
+  if (!isRecord(transport)) return undefined;
+
+  const eventName = transport.Event;
+  if (typeof eventName !== 'string' || !eventName.trim()) return undefined;
+
+  const toServer = !!transport.ToServer;
+  return createNetTransport(eventName, toServer);
+}
+
 export function createNetTransport(eventName: string, toServer = false): LoggerTransport {
   return {
     send(entry) {
@@ -220,6 +242,7 @@ function makeLogger(options: LoggerOptions): Logger {
 export const logger = makeLogger({
   // show resource name by default via GetCurrentResourceName()
   level: coerceLevel(Config?.Debug?.Level, 'info'),
+  transport: getDefaultTransport()
 });
 
 export function createLogger(options: LoggerOptions): Logger {

@@ -1,5 +1,9 @@
 {
   "Debug": {
-    "Level": "trace"
+    "Level": "trace",
+    "Transport": {
+      "Event": "logger:log",
+      "ToServer": false
+    }
   }
 }

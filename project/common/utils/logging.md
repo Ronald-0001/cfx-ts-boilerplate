@@ -52,7 +52,11 @@ Example:
 ```json
 {
   "Debug": {
-    "Level": "warn"
+    "Level": "warn",
+    "Transport": {
+      "Event": "logger:log",
+      "ToServer": false
+    }
   }
 }
 ```
@@ -283,14 +287,6 @@ Example output:
   "stack": "..."
 }
 ```
-
-### Colors (CFX)
-
-* Red → `fatal`, `error`
-* Yellow → `warn`
-* Green → `info`
-* Blue → `debug`
-* Gray → `trace`
 
 ---
 
