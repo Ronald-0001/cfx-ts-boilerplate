@@ -1,5 +1,6 @@
 import type { LogEntry, LogLevel, Logger, LoggerOptions, LoggerTransport } from '../types/logging';
 import Config from './config';
+import { isPlainObject } from './guards';
 
 /* ----------------------------- */
 /* Dev mode flag via $DEV label  */
@@ -9,14 +10,6 @@ let __DEV__ = false;
 // This line is removed from non-dev builds by esbuild dropLabels,
 // and kept in watch/dev builds.
 $DEV: (__DEV__ = true);
-
-/* ----------------------------- */
-/* Misc opperations              */
-/* ----------------------------- */
-
-function isRecord(v: unknown): v is Record<string, unknown> {
-  return typeof v === 'object' && v !== null && !Array.isArray(v);
-}
 
 /* ----------------------------- */
 /* Level ordering / filtering    */
@@ -37,6 +30,7 @@ function shouldPrint(level: LogLevel, minLevel: LogLevel): boolean {
   return LEVEL_WEIGHT[level] >= LEVEL_WEIGHT[minLevel];
 }
 
+// stays becouse i dont see why to expose levels to other moduels...
 function coerceLevel(v: unknown, fallback: LogLevel): LogLevel {
   return typeof v === 'string' && (Object.keys(LEVEL_WEIGHT) as readonly string[]).includes(v) ? (v as LogLevel) : fallback;
 }
@@ -129,10 +123,10 @@ function trace(line: string) {
 
 function getDefaultTransport(): LoggerTransport | undefined {
   const dbg = Config?.Debug;
-  if (!isRecord(dbg)) return undefined;
+  if (!isPlainObject(dbg)) return undefined;
 
   const transport = dbg.Transport;
-  if (!isRecord(transport)) return undefined;
+  if (!isPlainObject(transport)) return undefined;
 
   const eventName = transport.Event;
   if (typeof eventName !== 'string' || !eventName.trim()) return undefined;

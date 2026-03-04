@@ -2,6 +2,8 @@ import type { LanguageApi, LanguageArgs, LanguageConfigShape } from '../types/la
 import { LoadJsonFile } from './files';
 import Config from './config';
 import { logger } from './logging';
+import { coerceBool, coerceNum, coerceStr } from './coercions';
+import { isPlainObject } from './guards';
 
 /* ----------------------------- */
 /* Defaults                      */
@@ -37,10 +39,6 @@ async function loadLocaleFile(path: string): Promise<AnyObj | null> {
 
 type Dict = Record<string, string>;
 type AnyObj = Record<string, any>;
-
-function isPlainObject(v: unknown): v is Record<string, unknown> {
-  return typeof v === 'object' && v !== null && !Array.isArray(v);
-}
 
 function flatten(obj: AnyObj, prefix = '', out: Dict = {}): Dict {
   for (const [k, v] of Object.entries(obj)) {
@@ -118,19 +116,6 @@ function resolveRefs(
 
     return replacePlaceholders(resolved, warnMissing, file, args);
   });
-}
-
-function coerceBool(v: unknown, fallback: boolean): boolean {
-  return typeof v === 'boolean' ? v : fallback;
-}
-
-function coerceNum(v: unknown, fallback: number): number {
-  const n = typeof v === 'number' ? v : Number(v);
-  return Number.isFinite(n) ? n : fallback;
-}
-
-function coerceStr(v: unknown, fallback: string): string {
-  return typeof v === 'string' && v.trim() ? v.trim() : fallback;
 }
 
 function formatPath(directory: string, file: string, extension: string) {
