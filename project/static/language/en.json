@@ -2,6 +2,8 @@
   "common": {
     "world": "world",
     "hello": "Hello, $(common.world)!",
-    "greeting": "Hello, {name}!"
+    "greeting": "Hello, {name}!",
+    "greet": "Hello, $(common.world)! And hello, {rest}!",
+    "missingRef": "Hello, $(common.doesNotExist)!"
   }
 }

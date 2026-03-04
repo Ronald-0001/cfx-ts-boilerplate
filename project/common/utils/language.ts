@@ -51,12 +51,15 @@ function flatten(obj: AnyObj, prefix = '', out: Dict = {}): Dict {
   return out;
 }
 
-function replacePlaceholders(input: string, args?: LanguageArgs): string {
+function replacePlaceholders(input: string, warnMissing: boolean, file: string, args?: LanguageArgs): string {
   if (!args) return input;
 
   return input.replace(/\{([a-zA-Z0-9_.-]+)\}/g, (_m, name: string) => {
     const v = (args as any)[name];
-    if (v === undefined || v === null) return '';
+    if (v === undefined || v === null) {
+      if (warnMissing) log.warn(`Missing placeholder: ${_m} (file=${file})`);
+      return _m;
+    }
     return String(v);
   });
 }
@@ -67,6 +70,8 @@ function resolveRefs(
   dict: Dict,
   args: LanguageArgs | undefined,
   maxDepth: number,
+  warnMissing: boolean,
+  file: string,
   depth = 0,
   seen: Set<string> = new Set()
 ): string {
@@ -75,11 +80,25 @@ function resolveRefs(
   return raw.replace(/\$\(([a-zA-Z0-9_.-]+)\)/g, (_m, ref: string) => {
     if (seen.has(ref)) {
       // cycle detected
-      return '';
+      if (warnMissing) log.warn(`Cycle detected for language key: "${key}" (file=${file})`);
+      return `$(${ref})`;
+    }
+
+    if (args) {
+      // handle args overwrite
+      const v = (args as any)[ref];
+      if (v !== undefined && v !== null) {
+        return String(v);
+      }
     }
 
     const refRaw = dict[ref];
-    if (!refRaw) return '';
+
+    if (!refRaw) {
+      // dosent exist...
+      if (warnMissing) log.warn(`Missing language ref: ${_m} (file=${file})`);
+      return `$(${ref})`;
+    }
 
     seen.add(ref);
 
@@ -89,13 +108,15 @@ function resolveRefs(
       dict,
       args,
       maxDepth,
+      warnMissing,
+      file,
       depth + 1,
       seen
     );
 
     seen.delete(ref);
 
-    return replacePlaceholders(resolved, args);
+    return replacePlaceholders(resolved, warnMissing, file, args);
   });
 }
 
@@ -202,18 +223,16 @@ export function createLanguage(): LanguageApi {
 
   function t(key: string, args?: LanguageArgs): string {
     const raw = lookup(key);
+    // avoid spam during very early boot before first load attempt
+    const shouldWarn = warnMissing? (everLoaded || !loading) : false;
 
     if (!raw) {
-      if (warnMissing) {
-        // avoid spam during very early boot before first load attempt
-        const shouldWarn = everLoaded || !loading;
-        if (shouldWarn) log.warn(`Missing key "${key}" (file=${currentFile})`);
-      }
+      if (shouldWarn) log.warn(`Missing language key: "${key}" (file=${currentFile})`);
       return '';
     }
 
-    const withRefs = resolveRefs(key, raw, dict, args, maxDepth);
-    return replacePlaceholders(withRefs, args);
+    const withRefs = resolveRefs(key, raw, dict, args, maxDepth, shouldWarn, currentFile);
+    return replacePlaceholders(withRefs, shouldWarn, currentFile, args);
   }
 
   function tk(key: string, args?: LanguageArgs): string {
