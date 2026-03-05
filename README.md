@@ -32,11 +32,15 @@ To build and create GitHub releases, tag your commit (e.g. `v1.0.0`) and push it
 
 ## Structural Layout
 
-- [/dist/](dist)
-  - Compiled project files.
-- [/scripts/](scripts)
-  - Scripts used in the development process, but not part of the compiled resource.
-- [/project/](project)
-  - Project source code.
-- [/static/](static)
-  - Files to include with the resource that aren't compiled or loaded (e.g. config).
+**Root Level**: Contains configuration files (e.g., package.json, tsconfig.json), build artifacts (e.g., fxmanifest.lua), and documentation (e.g., README.md).
+- **project/**: Houses source code, divided into contexts:
+  - **client/**: Client-side scripts (e.g., index.ts).
+  - **server/**: Server-side scripts (e.g., index.ts), including utilities (e.g., commands.ts).
+  - **common/**: Shared code across contexts (e.g., index.ts), with types (e.g., commands.d.ts) and utilities (e.g., logging.ts).
+  - **interface/**: NUI (browser) interface (e.g., index.html), built with Vite (e.g., vite.config.ts).
+- **static/**: Static assets and configuration (e.g., static/config.json, language files in static/language/).
+- **scripts/**: Build and utility scripts (e.g., build.ts, with helpers in utils).
+- **Build Output**: Compiled files go to **dist/** (e.g., dist/client/index.js, dist/interface/).
+- **Separation Rule**: Code is strictly separated by runtime context (server, client, web), with common shared utilities.
+- **Configuration Rule**: Behavior is driven by static/config.json and build-time labels (e.g., $DEV, $SERVER).
+- **File Loading Rule**: Use files.ts for resource-relative paths, adjusted by resource.ts.
