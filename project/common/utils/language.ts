@@ -139,6 +139,15 @@ function readLanguageConfig(cfg: any): Required<LanguageConfigShape> {
 /* Language API                  */
 /* ----------------------------- */
 
+/**
+ * Creates a language API instance for translation lookup and language file loading.
+ *
+ * The instance automatically uses the configured default language and provides
+ * helper methods for resolving translated strings, accessing the active file,
+ * and reading the flattened dictionary.
+ *
+ * @returns A configured language API instance.
+ */
 export function createLanguage(): LanguageApi {
   let dict: Dict = {};
   let currentFile = defaultConfig.File;
@@ -239,6 +248,34 @@ export function createLanguage(): LanguageApi {
   return { loadLang, getFile, t, tk, getDictionary };
 }
 
+/**
+ * Default language API instance for the current resource.
+ *
+ * This instance is created automatically from the active language configuration
+ * and can be used directly for loading language files and resolving translations.
+ */
 export const lang = createLanguage();
+/**
+ * Resolves a translated string from the default language instance.
+ *
+ * The lookup uses the currently active language dictionary and supports
+ * placeholder replacement and language key references.
+ *
+ * If the key cannot be resolved, an empty string is returned.
+ *
+ * @param key - The translation key to resolve.
+ * @param args - Optional placeholder values used during string formatting.
+ * @returns The resolved translated string, or an empty string if the key is missing.
+ */
 export const t = (key: string, args?: LanguageArgs) => lang.t(key, args);
+/**
+ * Resolves a translated string from the default language instance.
+ *
+ * This behaves like `t()`, but returns the original key when no translation
+ * value can be resolved.
+ *
+ * @param key - The translation key to resolve.
+ * @param args - Optional placeholder values used during string formatting.
+ * @returns The resolved translated string, or the original key if missing.
+ */
 export const tk = (key: string, args?: LanguageArgs) => lang.tk(key, args);

@@ -30,7 +30,7 @@ function shouldPrint(level: LogLevel, minLevel: LogLevel): boolean {
   return LEVEL_WEIGHT[level] >= LEVEL_WEIGHT[minLevel];
 }
 
-// stays becouse i dont see why to expose levels to other moduels...
+// Internal helper kept private because log level coercion is only needed by this module.
 function coerceLevel(v: unknown, fallback: LogLevel): LogLevel {
   return typeof v === 'string' && (Object.keys(LEVEL_WEIGHT) as readonly string[]).includes(v) ? (v as LogLevel) : fallback;
 }
@@ -135,6 +135,20 @@ function getDefaultTransport(): LoggerTransport | undefined {
   return createNetTransport(eventName, toServer);
 }
 
+/**
+ * Creates a logger transport that forwards structured log entries through CFX events.
+ *
+ * The transport emits log entries using either `emitNet` or `emit` depending on
+ * the `toServer` flag. This allows logs to be forwarded to a central collector
+ * resource or monitoring system.
+ *
+ * Transport errors are intentionally ignored to ensure logging never crashes
+ * the running resource.
+ *
+ * @param eventName - The event name used when forwarding log entries.
+ * @param toServer - When true, entries are sent using `emitNet` (client → server).
+ * @returns A logger transport implementation.
+ */
 export function createNetTransport(eventName: string, toServer = false): LoggerTransport {
   return {
     send(entry) {
@@ -233,16 +247,41 @@ function makeLogger(options: LoggerOptions): Logger {
 /* Default logger export         */
 /* ----------------------------- */
 
+/**
+ * Default logger instance for the current resource.
+ *
+ * The logger automatically resolves the resource name and reads its
+ * minimum log level and transport configuration from `Config.Debug`.
+ * It can be used directly or extended through scoped child loggers.
+ */
 export const logger = makeLogger({
   // show resource name by default via GetCurrentResourceName()
   level: coerceLevel(Config?.Debug?.Level, 'info'),
   transport: getDefaultTransport()
 });
 
+/**
+ * Creates a new logger instance using the provided configuration.
+ *
+ * Custom loggers allow resources or subsystems to define their own
+ * log level, scope, prefix, transport, and fatal error behavior
+ * independent of the default logger.
+ *
+ * @param options - Logger configuration options.
+ * @returns A configured logger instance.
+ */
 export function createLogger(options: LoggerOptions): Logger {
   return makeLogger(options);
 }
 
+/**
+ * Indicates whether the current runtime is running in a dev build.
+ *
+ * The value is controlled by the `$DEV` build label and is typically
+ * used to enable development-only behavior such as verbose logging.
+ *
+ * @returns True when the current build is a development build.
+ */
 export function isDev(): boolean {
   return __DEV__;
 }

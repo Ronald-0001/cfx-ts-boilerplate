@@ -5,3 +5,4 @@ export * from './guards';
 export * from './language';
 export * from './logging';
 export * from './resource';
+export * from './validation';
