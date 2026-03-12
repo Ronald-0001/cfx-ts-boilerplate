@@ -6,14 +6,10 @@ import type {
   ParamsToArgs,
   CommandParamType,
 } from '../../common/types/commands';
+import { getEventSource } from '@common/utils/resource';
 
 const registeredCommands: Array<CommandProperties<any>> = [];
 let shouldSendCommands = false;
-
-function getEventSource(): number {
-  // FiveM server provides `source` as a global inside event handlers
-  return (globalThis as any).source as number;
-}
 
 setTimeout(() => {
   shouldSendCommands = true;
@@ -50,7 +46,6 @@ function parseArguments<P extends readonly CommandParam[]>(
       }
 
       case 'string': {
-        // require non-numeric string (mirrors ox-ish behavior)
         const s = String(arg ?? '');
         value = Number.isFinite(Number(s)) ? undefined : s;
         break;
@@ -68,9 +63,15 @@ function parseArguments<P extends readonly CommandParam[]>(
       }
 
       case 'longString': {
-        const s = String(arg ?? '');
-        // substring from first occurrence of the token
-        value = raw.substring(raw.indexOf(s));
+        const rest: string[] = [];
+
+        for (let i = index; i in args; i++) {
+          const part = args[i];
+          if (part === undefined || part === null) continue;
+          rest.push(String(part));
+        }
+
+        value = rest.length ? rest.join(' ') : undefined;
         break;
       }
 
@@ -80,9 +81,6 @@ function parseArguments<P extends readonly CommandParam[]>(
       }
     }
 
-    // Validation rule:
-    // - if missing/invalid AND param is not optional -> fail
-    // - if optional AND arg not provided -> allow (value may be undefined)
     const argProvided = arg !== undefined && arg !== null && String(arg).length > 0;
     const required = !param.optional;
 
@@ -93,7 +91,6 @@ function parseArguments<P extends readonly CommandParam[]>(
       return false;
     }
 
-    // Move positional arg to named key
     (args as any)[param.name] = value;
     delete (args as any)[index];
 
@@ -104,16 +101,44 @@ function parseArguments<P extends readonly CommandParam[]>(
 }
 
 /**
- * Strongly-typed command registration.
+ * Registers a command that can be executed by players or the server console.
  *
- * ✅ If you pass `params` as `as const`, the `args` type is inferred from param names + types.
+ * The command callback receives:
  *
- * Example:
+ * - `source` – the player id that executed the command (0 when run from console)
+ * - `args` – parsed command arguments
+ * - `raw` – the full raw command string
+ *
+ * Command arguments can be described using the `params` property. When
+ * `params` is provided as `as const`, the callback argument type will be
+ * inferred from the parameter definitions.
+ *
+ * Commands may also define help text and other metadata through the
+ * `properties` object. When provided, these properties are automatically
+ * used for chat suggestions.
+ *
+ * @typeParam P - Parameter definition tuple used to infer the callback argument type.
+ * @param commandName - Command name or array of aliases.
+ * @param cb - Function executed when the command is run.
+ * @param properties - Optional command configuration and metadata.
+ *
+ * @example
+ * ```ts
  * addCommand(
  *   'tp',
- *   async (src, args) => { args.player; args.x; },
- *   { params: [{ name:'player', paramType:'playerId' }, { name:'x', paramType:'number' }] as const }
- * )
+ *   (source, args) => {
+ *     const player = args.player;
+ *     const x = args.x;
+ *   },
+ *   {
+ *     help: 'Teleport a player',
+ *     params: [
+ *       { name: 'player', paramType: 'playerId' },
+ *       { name: 'x', paramType: 'number' }
+ *     ] as const
+ *   }
+ * );
+ * ```
  */
 export function addCommand<const P extends readonly CommandParam[] | undefined>(
   commandName: string | string[],

@@ -75,3 +75,29 @@ $DEV: {
  * development and packaged environments.
  */
 export const ResourcePath = _devResourcePath ?? ".";
+
+/**
+ * Returns the current event source from the CFX server runtime.
+ *
+ * In FiveM server event handlers, the player identifier that triggered
+ * the event is exposed as a global variable named `source`. This helper
+ * provides a typed and explicit way to access that value.
+ *
+ * This is primarily used inside server-side event handlers to determine
+ * which player triggered the event.
+ *
+ * Example:
+ *
+ * ```ts
+ * onNet("inventory:open", () => {
+ *   const src = getEventSource();
+ *   // handle player logic
+ * });
+ * ```
+ *
+ * @returns The player source identifier associated with the current event.
+ */
+export function getEventSource(): number {
+  // FiveM server provides `source` as a global inside event handlers
+  return (globalThis as any).source as number;
+}
