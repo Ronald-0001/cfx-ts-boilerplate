@@ -12,7 +12,8 @@ import { ResourceName, IsBrowser, ResourcePath } from './resource';
  * @returns The file contents as a string.
  */
 export function LoadFile(path: string) {
-  return LoadResourceFile(ResourceName, `${ResourcePath}/${path}`);
+  // $SERVER: return LoadResourceFile(ResourceName, `${ResourcePath}/${path}`); // only available in server enviroment
+  return LoadResourceFile(ResourceName, `./${path}`);
 }
 
 //TODO: need to ensure loading correct path in browser!
