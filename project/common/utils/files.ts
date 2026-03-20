@@ -12,11 +12,10 @@ import { ResourceName, IsBrowser, ResourcePath } from './resource';
  * @returns The file contents as a string.
  */
 export function LoadFile(path: string) {
-  // $SERVER: return LoadResourceFile(ResourceName, `${ResourcePath}/${path}`); // only available in server enviroment
-  return LoadResourceFile(ResourceName, `./${path}`);
+  return LoadResourceFile(ResourceName, `${ResourcePath}/${path}`);
 }
 
-//TODO: need to ensure loading correct path in browser!
+// TODO: need to ensure loading correct path in browser!
 // remember to update files.md when changing this function in future
 /**
  * Loads and parses a JSON file from the resource.
