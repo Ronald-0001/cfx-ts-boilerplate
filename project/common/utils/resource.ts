@@ -61,7 +61,7 @@ export const ResourceName = IsBrowser
  */
 let _devResourcePath;
 $DEV: {
-  _devResourcePath = "./dist"; 
+  _devResourcePath = "dist/"; 
 }
 
 /**
@@ -74,7 +74,7 @@ $DEV: {
  * This allows code to reference files consistently across both
  * development and packaged environments.
  */
-export const ResourcePath = _devResourcePath ?? ".";
+export const ResourcePath = _devResourcePath ?? "";
 
 /**
  * Returns the current event source from the CFX server runtime.
