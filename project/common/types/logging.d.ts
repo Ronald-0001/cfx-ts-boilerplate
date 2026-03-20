@@ -136,6 +136,13 @@ export interface Logger {
    * @param level - The new minimum log level.
    */
   setLevel(level: LogLevel): void;
+  
+  /**
+   * Returns the minimum log level for the current logger instance.
+   *
+   * @return LogLevel - The minimum log level.
+   */
+  getLevel(): LogLevel;
 
   /**
    * Writes a fatal log entry.

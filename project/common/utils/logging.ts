@@ -219,6 +219,9 @@ function makeLogger(options: LoggerOptions): Logger {
     setLevel(level: LogLevel) {
       minLevel = level;
     },
+    getLevel() {
+      return minLevel;
+    },
 
     fatal(message: string, meta?: unknown) {
       write('fatal', message, meta);
