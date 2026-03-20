@@ -34,6 +34,8 @@ function parseArguments<P extends readonly CommandParam[]>(
 ): (RawCommandArgs & ParamsToArgs<P>) | undefined {
   if (!params?.length) return args as any;
 
+  const parsedArgs: Record<string, unknown> = {};
+
   const ok = params.every((param, index) => {
     const arg = args[index];
     let value: any;
@@ -46,8 +48,8 @@ function parseArguments<P extends readonly CommandParam[]>(
       }
 
       case 'string': {
-        const s = String(arg ?? '');
-        value = Number.isFinite(Number(s)) ? undefined : s;
+        const s = String(arg ?? '').trim();
+        value = s.length > 0 ? s : undefined;
         break;
       }
 
@@ -91,13 +93,12 @@ function parseArguments<P extends readonly CommandParam[]>(
       return false;
     }
 
-    (args as any)[param.name] = value;
-    delete (args as any)[index];
+    parsedArgs[param.name] = value;
 
     return true;
   });
 
-  return ok ? (args as any) : undefined;
+  return ok ? (parsedArgs as any) : undefined;
 }
 
 /**
