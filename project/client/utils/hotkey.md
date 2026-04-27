@@ -152,7 +152,7 @@ These reflect the physical key state.
 These are higher-level gesture events.
 
 * `onPress(handler)`
-* `onHold(delayMs, handler)`
+* `onHold(delayMs, handler, allowRepeat)`
 * `onTap(handler)`
 
 ---
@@ -203,7 +203,7 @@ hotkey.onPress(() => {
 
 ---
 
-### `hotkey.onHold(delayMs, handler)`
+### `hotkey.onHold(delayMs, handler, allowRepeat)`
 
 Called once when the key has been held down for at least `delayMs`.
 
@@ -212,7 +212,7 @@ If hold is triggered, the input is treated as a hold instead of a short press.
 ```ts
 hotkey.onHold(1000, () => {
   console.log("held for 1 second");
-});
+}, false);
 ```
 
 ---
@@ -312,7 +312,7 @@ If `onTap()` **is** registered:
 
 If the input becomes a hold:
 
-* `onHold()` is called once
+* `onHold()` is called once or repeadedly if allowed
 * `onPress()` is not called
 * `onTap()` is not called for that input
 
@@ -362,6 +362,7 @@ Hold detection starts when the key goes down.
 If the key remains down for the configured duration:
 
 * `onHold()` fires once
+* or repeadedly if allowed
 * the input is treated as a hold
 * short press logic should not also fire for the same input
 
@@ -374,7 +375,7 @@ hotkey
   })
   .onHold(750, () => {
     console.log("hold");
-  });
+  }, allowRepeat: false);
 ```
 
 Expected result:
@@ -557,7 +558,7 @@ new Hotkey({
   console.log("short decrease");
 }).onHold(1000, () => {
   console.log("held decrease");
-});
+}, false);
 ```
 
 ---
@@ -706,7 +707,7 @@ increaseHotkey
   })
   .onHold(1000, () => {
     $DEV: logger.trace("increase hold");
-  })
+  }, false)
   .onTap((_self, count) => {
     $DEV: logger.trace(`increase tap count ${count}`);
   });

@@ -56,4 +56,5 @@ export interface HotkeyOptions {
 export interface HoldBinding {
   delayMs: number;
   handler: HotkeyEventFunc;
+  allowRepeat: boolean;
 }

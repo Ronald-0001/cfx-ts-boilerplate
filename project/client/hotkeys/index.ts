@@ -25,7 +25,7 @@ export function registerDemoHotkey() {
     .onHold(500, () => {
       $DEV: logger.trace("Hotkey demohotkey hold");
       // onHold triggers after the key has been held for at least the specified duration (500ms in this case), regardless of taps
-    })
+    }, true) // allowRepeat = true means the hold handler will be called repeatedly every 500ms while the key is held
     .onTap((_self, count) => {
       $DEV: logger.trace(`Hotkey demohotkey tap count ${count}`);
       // onTap triggers after the key has been pressed and released again, grouped by the tap window. The callback receives the final tap count for the grouping

@@ -29,6 +29,7 @@ export class Hotkey {
   private tapCount = 0;
 
   private holdTimeout?: ReturnType<typeof setTimeout>;
+  private holdInterval?: ReturnType<typeof setInterval>;
   private tapTimeout?: ReturnType<typeof setTimeout>;
 
   constructor(options: HotkeyOptions) {
@@ -86,10 +87,11 @@ export class Hotkey {
    *
    * If hold is triggered, `onPress` and `onTap` are not fired for that press.
    */
-  public onHold(delayMs: number, handler?: HotkeyEventFunc): this {
+  public onHold(delayMs: number, handler?: HotkeyEventFunc, allowRepeat?: boolean): this {
     this.holdBinding = {
       delayMs,
       handler: handler ?? (() => {}),
+      allowRepeat: allowRepeat ?? false,
     };
 
     return this;
@@ -191,18 +193,18 @@ export class Hotkey {
       this.clearHoldTimeout();
 
       this.holdTimeout = setTimeout(() => {
-        if (!this.enabled) return;
-        if (!this.pressed) return;
-        if (!this.holdBinding) return;
-        if (this.holdTriggered) return;
+        if (!this.isDown) return;
 
         this.holdTriggered = true;
+        this.holdBinding?.handler?.(this);
 
-        $DEV: logger.trace(
-          `Hotkey ${this.getBaseCommandName()} hold triggered after ${this.holdBinding.delayMs}ms`,
-        );
+        if (this.holdBinding?.allowRepeat) {
+          this.holdInterval = setInterval(() => {
+            if (!this.isDown) return;
 
-        this.holdBinding.handler(this);
+            this.holdBinding?.handler?.(this);
+          }, this.holdBinding?.delayMs);
+        }
       }, this.holdBinding.delayMs);
     }
   }
@@ -254,10 +256,15 @@ export class Hotkey {
   }
 
   private clearHoldTimeout() {
-    if (!this.holdTimeout) return;
+    if (this.holdTimeout) {
+      clearTimeout(this.holdTimeout);
+      this.holdTimeout = undefined;
+    }
 
-    clearTimeout(this.holdTimeout);
-    this.holdTimeout = undefined;
+    if (this.holdInterval) {
+      clearInterval(this.holdInterval);
+      this.holdInterval = undefined;
+    }
   }
 
   private clearTapTimeout() {
