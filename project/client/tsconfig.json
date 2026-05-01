@@ -3,10 +3,14 @@
   "compilerOptions": {
     "paths": {
       "~/*": ["../../*"],
-      "@common/*": ["../../modules/common/*"],
-      "@client/*": ["../../modules/client/*"],
-      "~common/*": ["../../project/common/*"],
-      "~client/*": ["../../project/client/*"]
+      "@common/*": [
+        "../../modules/common/*",
+        "../../project/common/*"
+      ],
+      "@client/*": [
+        "../../modules/client/*",
+        "../../project/client/*"
+      ]
     }
   },
   "include": ["./"]

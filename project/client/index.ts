@@ -1,5 +1,5 @@
 import Config from '@common/config';
-import { Greetings } from '~common/index';
+import { Greetings } from '@common/index';
 
 import { Hotkey } from "@client/hotkey";
 import { logger } from "@common/logging";

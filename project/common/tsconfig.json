@@ -3,8 +3,10 @@
   "compilerOptions": {
     "paths": {
       "~/*": ["../../*"],
-      "@common/*": ["../../modules/common/*"],
-      "~common/*": ["../../project/common/*"]
+      "@common/*": [
+        "../../modules/common/*",
+        "../../project/common/*"
+      ]
     }
   },
   "include": ["./"]
