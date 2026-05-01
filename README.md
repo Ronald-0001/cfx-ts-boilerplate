@@ -5,6 +5,7 @@ A modern TypeScript boilerplate for FiveM resources using esbuild + Vite.
 ## Note
 
 before use please note this is still being developed and tested features might change and stuff might still not be setup propperly!
+can already warn that structual layout have changed so all pre extisting utility, helper, and extra have been moved into modules
 
 ## Features
 - Server / Client / Interface separation
