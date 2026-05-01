@@ -1,12 +1,12 @@
-import { addAce } from './acl';
+import { addAce } from '@server/acl';
 import type {
   RawCommandArgs,
   CommandParam,
   CommandProperties,
   ParamsToArgs,
   CommandParamType,
-} from '../../common/types/commands';
-import { getEventSource } from '@common/utils/resource';
+} from '@server/command/types';
+import { getEventSource } from '@common/resource';
 
 const registeredCommands: Array<CommandProperties<any>> = [];
 let shouldSendCommands = false;

@@ -1,4 +1,4 @@
-import { ResourceName, IsBrowser, ResourcePath } from './resource';
+import { ResourceName, IsBrowser, ResourcePath } from '@common/resource';
 
 /**
  * Loads a file from the current resource.

@@ -1,6 +1,6 @@
-import type { LogEntry, LogLevel, Logger, LoggerOptions, LoggerTransport } from '../types/logging';
-import Config from './config';
-import { isPlainObject } from './guards';
+import type { LogEntry, LogLevel, Logger, LoggerOptions, LoggerTransport } from '@common/logging/types';
+import { isPlainObject } from '@common/utils/guard';
+import Config from '@common/config';
 
 /* ----------------------------- */
 /* Dev mode flag via $DEV label  */

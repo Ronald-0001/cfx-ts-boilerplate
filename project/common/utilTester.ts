@@ -1,5 +1,5 @@
-import { createLogger, createNetTransport, logger } from './utils/logging';
-import { t, tk } from './utils/language';
+import { createLogger, createNetTransport, logger } from '@common/logging';
+import { t, tk } from '@common/language';
 
 export function TestEnviroments() {
   $SERVER: logger.info('COMMON: Server build active');

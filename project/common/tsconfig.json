@@ -1,12 +1,11 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../modules/common/tsconfig.json",
   "compilerOptions": {
-    "baseUrl": "./",
     "paths": {
       "~/*": ["../../*"],
-      "@common/*": ["../common/*"]
-    },
-    "types": ["@types/node", "@citizenfx/server", "@citizenfx/client"]
+      "@common/*": ["../../modules/common/*"],
+      "~common/*": ["../../project/common/*"]
+    }
   },
-  "include": ["./", "../server/utils/commands.ts", "../server/utils/acl.ts"]
+  "include": ["./"]
 }

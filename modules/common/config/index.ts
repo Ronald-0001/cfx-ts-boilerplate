@@ -5,7 +5,7 @@
 // if config is not found, throw error
 
 import type StaticConfig from '~/project/static/config.json';
-import { LoadJsonFile } from './files';
+import { LoadJsonFile } from '@common/directory';
 
 let config = LoadJsonFile('static/config.json');
 $BROWSER: {

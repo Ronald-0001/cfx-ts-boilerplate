@@ -1,4 +1,4 @@
-import type { AclApi, AceAllow } from '../../common/types/acl';
+import type { AclApi, AceAllow } from '@server/acl/types';
 
 function allowAce(allow: AceAllow): 'allow' | 'deny' {
   return allow === false ? 'deny' : 'allow';

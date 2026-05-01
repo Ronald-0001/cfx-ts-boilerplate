@@ -1,9 +1,9 @@
-import type { LanguageApi, LanguageArgs, LanguageConfigShape } from '../types/language';
-import { LoadJsonFile } from './files';
-import Config from './config';
-import { logger } from './logging';
-import { coerceBool, coerceNum, coerceStr } from './coercions';
-import { isPlainObject } from './guards';
+import type { LanguageApi, LanguageArgs, LanguageConfigShape } from '@common/language/types';
+import { LoadJsonFile } from '@common/directory';
+import Config from '@common/config';
+import { logger } from '@common/logging';
+import { coerceBool, coerceNum, coerceStr } from '@common/utils/coercion';
+import { isPlainObject } from '@common/utils/guard';
 
 /* ----------------------------- */
 /* Defaults                      */
@@ -201,6 +201,7 @@ export function createLanguage(): LanguageApi {
         loading = false;
         everLoaded = true;
         dict = {};
+        return;
       }
     }
 

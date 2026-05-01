@@ -1,11 +1,11 @@
-import { logger } from "@common/utils/logging";
-import { ResourceName } from "@common/utils/resource";
+import { logger } from "@common/logging";
+import { ResourceName } from "@common/resource";
 import {
   HotkeyEventFunc,
   HotkeyTapEventFunc,
   HotkeyOptions,
   HoldBinding
-} from "@common/types/hotkey";
+} from "@client/hotkey/types";
 
 export class Hotkey {
   public readonly name: string;

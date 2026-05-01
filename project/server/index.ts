@@ -1,7 +1,7 @@
-import Config from '@common/utils/config';
-import { Greetings } from '@common/index';
-import { addCommand } from './utils/commands';
-import { logger } from '@common/utils';
+import Config from '@common/config';
+import { Greetings } from '~common/index';
+import { addCommand } from '@server/command';
+import { logger } from '@common/logging';
 
 $DEV: logger.debug('Loaded config', Config);
 
