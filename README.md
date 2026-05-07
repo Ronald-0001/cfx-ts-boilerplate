@@ -1,51 +1,86 @@
 # cfx-ts-boilerplate
 
-A modern TypeScript boilerplate for FiveM resources using esbuild + Vite.
+A modern TypeScript boilerplate for CFX resources focused on strong typing, runtime separation, and standalone modular architecture.
 
-## Note
+Built around:
 
-before use please note this is still being developed and tested features might change and stuff might still not be setup propperly!
-can already warn that structual layout have changed so all pre extisting utility, helper, and extra have been moved into modules
+* TypeScript
+* esbuild
+* Vite
+* runtime-aware builds
+* reusable modular utilities
 
-## Features
-- Server / Client / Interface separation
-- Typed command system
-- Build pipeline with watch + production mode
-- NUI (React + Vite)
+---
 
-### Setup
+# Status
 
-Navigate to your new directory and execute the following command to install dependencies.
+> This project is currently under active development.
+> Structural changes and module APIs may still evolve between releases.
 
-```
+---
+
+# Features
+
+* Client / Server / Interface runtime separation
+* Modular architecture
+* Typed utility layer
+* Environment-aware builds
+* esbuild pipeline
+* Vite-powered interface development
+* Build-time runtime labels
+* Framework-agnostic design
+
+---
+
+# Installation
+
+```bash
 pnpm install
 ```
 
-## Development
+---
 
-Use `pnpm build:dev` to build all project files in a readable production mode.
+# Development
 
-Use `pnpm watch` to actively rebuild modified files while developing the resource.
+| Command          | Description                     |
+| ---------------- | ------------------------------- |
+| `pnpm watch`     | Watch and rebuild project files |
+| `pnpm build:dev` | Development build               |
+| `pnpm build`     | Production build                |
+| `pnpm web:dev`   | Start Vite interface dev server |
 
-During web development, use `pnpm web:dev` to start vite's webserver and watch for changes.
+---
 
-## Build
+# Project Documentation
 
-Use `pnpm build` to build all project files in production mode.
+<details>
+<summary><strong>Project Structure</strong></summary>
 
-To build and create GitHub releases, tag your commit (e.g. `v1.0.0`) and push it.
+* [Project](./project/README.md)
+* [Modules](./modules/README.md)
+* [Interface- wip](./project/interface/README.md)
 
-## Structural Layout
+</details>
 
-**Root Level**: Contains configuration files (e.g., package.json, tsconfig.json), build artifacts (e.g., fxmanifest.lua), and documentation (e.g., README.md).
-- **project/**: Houses source code, divided into contexts:
-  - **client/**: Client-side scripts (e.g., index.ts).
-  - **server/**: Server-side scripts (e.g., index.ts), including utilities (e.g., commands.ts).
-  - **common/**: Shared code across contexts (e.g., index.ts), with types (e.g., commands.d.ts) and utilities (e.g., logging.ts).
-  - **interface/**: NUI (browser) interface (e.g., index.html), built with Vite (e.g., vite.config.ts).
-- **static/**: Static assets and configuration (e.g., static/config.json, language files in static/language/).
-- **scripts/**: Build and utility scripts (e.g., build.ts, with helpers in utils).
-- **Build Output**: Compiled files go to **dist/** (e.g., dist/client/index.js, dist/interface/).
-- **Separation Rule**: Code is strictly separated by runtime context (server, client, web), with common shared utilities.
-- **Configuration Rule**: Behavior is driven by static/config.json and build-time labels (e.g., $DEV, $SERVER).
-- **File Loading Rule**: Use files.ts for resource-relative paths, adjusted by resource.ts.
+<details>
+<summary><strong>Build System</strong></summary>
+
+* [Build Pipeline- wip](./scripts/README.md)
+* [Environment Labels- wip](./environment.md)
+
+</details>
+
+---
+
+# Design Goals
+
+The boilerplate is designed around a few core principles:
+
+* standalone-first architecture
+* minimal framework coupling
+* strong TypeScript support
+* runtime separation
+* extensibility
+* modular adoption
+
+The goal is to provide reusable building blocks without enforcing a rigid framework structure.
